@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baumanns-Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f4f4f4;
+    }
+    #quizBox {
+      background: white;
+      padding: 20px;
+      max-width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Baumanns‑Quiz</h1>
+  <div id="quizBox">
+    <p id="frage">Frage wird geladen...</p>
+    <input type="text" id="antwort" placeholder="Deine Antwort" />
+    <br />
+    <button onclick="checkAntwort()">Antwort prüfen</button>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    const fragen = [
+      { frage: "Wer erfand das Baumanns‑Register?", antwort: "Baumann" },
+      { frage: "Wofür wird ein Register verwendet?", antwort: "Speicherung" },
+      { frage: "Wie nennt man eine Sammlung von Einträgen?", antwort: "Register" }
+    ];
+
+    let aktuelleFrage = {};
+
+    function neueFrage() {
+      aktuelleFrage = fragen[Math.floor(Math.random() * fragen.length)];
+      document.getElementById("frage").textContent = aktuelleFrage.frage;
+      document.getElementById("antwort").value = "";
+      document.getElementById("result").textContent = "";
+    }
+
+    function checkAntwort() {
+      const nutzer = document.getElementById("antwort").value.trim();
+      const res = document.getElementById("result");
+      if (nutzer.toLowerCase() === aktuelleFrage.antwort.toLowerCase()) {
+        res.textContent = "Richtig!";
+        res.style.color = "green";
+      } else {
+        res.textContent = "Falsch. Richtige Antwort: " + aktuelleFrage.antwort;
+        res.style.color = "red";
+      }
+      setTimeout(neueFrage, 1500);
+    }
+
+    neueFrage();
+  </script>
+</body>
+</html>
