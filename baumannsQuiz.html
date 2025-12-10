@@ -3,6 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Baumanns-Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f4f4f4;
+    }
+    #quizBox {
+      background: white;
+      padding: 20px;
+      max-width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      
   <title>Baumanns-Quiz 2.0</title>
 
   <style>
@@ -59,125 +79,45 @@
   </style>
 </head>
 <body>
-
-  <div id="quizContainer">
-    <h1>Baumanns-Quiz 2.0</h1>
-    <div id="timer">20</div>
-    <p id="question">Frage wird geladen…</p>
-    <div id="answerButtons"></div>
-    <button id="nextBtn" onclick="nextQuestion()">Nächste Frage</button>
-    <p id="scoreText"></p>
+  <h1>Baumanns‑Quiz</h1>
+  <div id="quizBox">
+    <p id="frage">Frage wird geladen...</p>
+    <input type="text" id="antwort" placeholder="Deine Antwort" />
+    <br />
+    <button onclick="checkAntwort()">Antwort prüfen</button>
+    <p id="result"></p>
   </div>
 
   <script>
-    const questions = [
-      {
-        q: "Wer erfand das Baumanns-Register?",
-        answers: ["Baumann", "Einstein", "Schmidt", "Goethe"],
-        correct: 0
-      },
-      {
-        q: "Wofür wird ein Register verwendet?",
-        answers: ["Zum Schlafen", "Für Speicherung", "Zum Spielen", "Zum Drucken"],
-        correct: 1
-      },
-      {
-        q: "Wie nennt man eine Sammlung von Einträgen?",
-        answers: ["Liste", "Register", "Tabelle", "Katalog"],
-        correct: 1
-      }
+    const fragen = [
+      { frage: "Wer erfand das Baumanns‑Register?", antwort: "Baumann" },
+      { frage: "Wofür wird ein Register verwendet?", antwort: "Speicherung" },
+      { frage: "Wie nennt man eine Sammlung von Einträgen?", antwort: "Register" }
     ];
 
-    let index = 0;
-    let score = 0;
-    let timer;
-    let timeLeft = 20;
+    let aktuelleFrage = {};
 
-    function startTimer() {
-      timeLeft = 20;
-      document.getElementById("timer").textContent = timeLeft;
-
-      timer = setInterval(() => {
-        timeLeft--;
-        document.getElementById("timer").textContent = timeLeft;
-
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          lockAnswers();
-        }
-      }, 1000);
+    function neueFrage() {
+      aktuelleFrage = fragen[Math.floor(Math.random() * fragen.length)];
+      document.getElementById("frage").textContent = aktuelleFrage.frage;
+      document.getElementById("antwort").value = "";
+      document.getElementById("result").textContent = "";
     }
 
-    function loadQuestion() {
-      clearInterval(timer);
-      startTimer();
-
-      const q = questions[index];
-      document.getElementById("question").textContent = q.q;
-      const answ = document.getElementById("answerButtons");
-      answ.innerHTML = "";
-
-      q.answers.forEach((a, i) => {
-        const btn = document.createElement("button");
-        btn.className = "btn";
-        btn.textContent = a;
-        btn.onclick = () => check(i);
-        answ.appendChild(btn);
-      });
-
-      document.getElementById("nextBtn").style.display = "none";
-    }
-
-    function check(selected) {
-      clearInterval(timer);
-      const q = questions[index];
-      const buttons = document.querySelectorAll(".btn");
-
-      buttons.forEach((b, i) => {
-        b.disabled = true;
-        if (i === q.correct) b.style.background = "#4caf50";
-        if (i === selected && selected !== q.correct) b.style.background = "#e63946";
-      });
-
-      if (selected === q.correct) score++;
-
-      document.getElementById("nextBtn").style.display = "block";
-    }
-
-    function lockAnswers() {
-      const q = questions[index];
-      const buttons = document.querySelectorAll(".btn");
-
-      buttons.forEach((b, i) => {
-        b.disabled = true;
-        if (i === q.correct) b.style.background = "#4caf50";
-      });
-
-      document.getElementById("nextBtn").style.display = "block";
-    }
-
-    function nextQuestion() {
-      index++;
-      if (index < questions.length) {
-        loadQuestion();
+    function checkAntwort() {
+      const nutzer = document.getElementById("antwort").value.trim();
+      const res = document.getElementById("result");
+      if (nutzer.toLowerCase() === aktuelleFrage.antwort.toLowerCase()) {
+        res.textContent = "Richtig!";
+        res.style.color = "green";
       } else {
-        endQuiz();
+        res.textContent = "Falsch. Richtige Antwort: " + aktuelleFrage.antwort;
+        res.style.color = "red";
       }
+      setTimeout(neueFrage, 1500);
     }
 
-    function endQuiz() {
-      document.getElementById("question").textContent = "Quiz beendet!";
-      document.getElementById("timer").style.display = "none";
-      document.getElementById("answerButtons").innerHTML = "";
-
-      document.getElementById("scoreText").textContent =
-        `Du hast ${score} von ${questions.length} Fragen richtig!`;
-
-      document.getElementById("nextBtn").style.display = "none";
-    }
-
-    loadQuestion();
+    neueFrage();
   </script>
-
 </body>
 </html>
