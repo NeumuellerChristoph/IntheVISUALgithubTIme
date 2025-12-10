@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baumanns-Quiz 2.0</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #4cc9f0, #4361ee);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #quizContainer {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      transform: scale(1.03);
+    }
+
+    #nextBtn {
+      margin-top: 15px;
+      background: #4cc9f0;
+      color: #000;
+      display: none;
+    }
+
+    #timer {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="quizContainer">
+    <h1>Baumanns-Quiz 2.0</h1>
+    <div id="timer">20</div>
+    <p id="question">Frage wird geladen…</p>
+    <div id="answerButtons"></div>
+    <button id="nextBtn" onclick="nextQuestion()">Nächste Frage</button>
+    <p id="scoreText"></p>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: "Wer erfand das Baumanns-Register?",
+        answers: ["Baumann", "Einstein", "Schmidt", "Goethe"],
+        correct: 0
+      },
+      {
+        q: "Wofür wird ein Register verwendet?",
+        answers: ["Zum Schlafen", "Für Speicherung", "Zum Spielen", "Zum Drucken"],
+        correct: 1
+      },
+      {
+        q: "Wie nennt man eine Sammlung von Einträgen?",
+        answers: ["Liste", "Register", "Tabelle", "Katalog"],
+        correct: 1
+      }
+    ];
+
+    let index = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 20;
+
+    function startTimer() {
+      timeLeft = 20;
+      document.getElementById("timer").textContent = timeLeft;
+
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          lockAnswers();
+        }
+      }, 1000);
+    }
+
+    function loadQuestion() {
+      clearInterval(timer);
+      startTimer();
+
+      const q = questions[index];
+      document.getElementById("question").textContent = q.q;
+      const answ = document.getElementById("answerButtons");
+      answ.innerHTML = "";
+
+      q.answers.forEach((a, i) => {
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = a;
+        btn.onclick = () => check(i);
+        answ.appendChild(btn);
+      });
+
+      document.getElementById("nextBtn").style.display = "none";
+    }
+
+    function check(selected) {
+      clearInterval(timer);
+      const q = questions[index];
+      const buttons = document.querySelectorAll(".btn");
+
+      buttons.forEach((b, i) => {
+        b.disabled = true;
+        if (i === q.correct) b.style.background = "#4caf50";
+        if (i === selected && selected !== q.correct) b.style.background = "#e63946";
+      });
+
+      if (selected === q.correct) score++;
+
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function lockAnswers() {
+      const q = questions[index];
+      const buttons = document.querySelectorAll(".btn");
+
+      buttons.forEach((b, i) => {
+        b.disabled = true;
+        if (i === q.correct) b.style.background = "#4caf50";
+      });
+
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function nextQuestion() {
+      index++;
+      if (index < questions.length) {
+        loadQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+    function endQuiz() {
+      document.getElementById("question").textContent = "Quiz beendet!";
+      document.getElementById("timer").style.display = "none";
+      document.getElementById("answerButtons").innerHTML = "";
+
+      document.getElementById("scoreText").textContent =
+        `Du hast ${score} von ${questions.length} Fragen richtig!`;
+
+      document.getElementById("nextBtn").style.display = "none";
+    }
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
